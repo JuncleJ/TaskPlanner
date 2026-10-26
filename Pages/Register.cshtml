@@ -1,0 +1,26 @@
+@page
+@model TaskPlanner.Pages.RegisterModel
+
+<h2>Регистрация</h2>
+
+<form method="post">
+    <div asp-validation-summary="All"
+         class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Email">Email</label>
+        <input asp-for="Email" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Password">Пароль</label>
+        <input asp-for="Password" type="password"
+               class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Зарегистрироваться
+    </button>
+</form>
+
+<a asp-page="/login">Уже есть аккаунт? Войти</a>

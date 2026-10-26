@@ -1,0 +1,36 @@
+@page
+
+@{
+    ViewData["Title"] = "Корзина";
+}
+
+<h1>Корзина</h1>
+
+<a asp-page="/Tasks" class="btn btn-outline-primary mb-3">
+    Назад к задачам
+</a>
+
+<div id="trashMessage" class="text-danger" role="alert"></div>
+
+<div class="row g-2 mb-3">
+    <div class="col-md-6">
+        <input id="trashSearch"
+               class="form-control"
+               placeholder="Поиск удалённых задач" />
+    </div>
+
+    <div class="col-md-4">
+        <select id="trashSort" class="form-select">
+            <option value="newest">Сначала новые</option>
+            <option value="oldest">Сначала старые</option>
+            <option value="due_asc">Ближайший срок</option>
+            <option value="due_desc">Дальний срок</option>
+        </select>
+    </div>
+</div>
+
+<ul id="trashList" class="list-group"></ul>
+
+@section Scripts {
+    <script src="~/js/trash.js" asp-append-version="true"></script>
+}

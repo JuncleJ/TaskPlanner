@@ -1,0 +1,81 @@
+@page
+
+@{
+    ViewData["Title"] = "Задачи";
+}
+
+<form method="post" asp-page="/Logout" class="mb-3">
+    <button type="submit" class="btn btn-outline-secondary">
+        Выйти
+    </button>
+</form>
+
+<h1>Планировщик задач</h1>
+
+<div class="mb-3">
+    <a asp-page="/Trash" class="btn btn-outline-secondary">
+        Корзина
+    </a>
+</div>
+
+<div id="message" class="text-danger mb-3" role="alert"></div>
+
+<h4>Создание / редактирование</h4>
+
+<form id="taskForm" class="mb-4">
+    <div class="mb-3">
+        <label for="title" class="form-label">Название</label>
+        <input id="title" class="form-control"
+               maxlength="200" required />
+    </div>
+
+    <div class="mb-3">
+        <label for="description" class="form-label">Описание</label>
+        <textarea id="description" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="dueAt" class="form-label">Срок выполнения</label>
+        <input id="dueAt" type="datetime-local"
+               class="form-control" />
+    </div>
+
+    <button id="saveButton" type="submit" class="btn btn-primary">
+        Создать
+    </button>
+
+    <button id="cancelButton" type="button"
+            class="btn btn-secondary" hidden>
+        Отмена
+    </button>
+</form>
+
+<h4>Список задач</h4>
+
+<form id="filterForm" class="row g-2 mb-3">
+    <div class="col-md-6">
+        <input id="search" class="form-control"
+               placeholder="Поиск по названию" />
+    </div>
+
+    <div class="col-md-4">
+        <select id="sort" class="form-select">
+            <option value="newest">Сначала новые</option>
+            <option value="oldest">Сначала старые</option>
+            <option value="due_asc">Ближайший срок</option>
+            <option value="due_desc">Дальний срок</option>
+        </select>
+    </div>
+
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-outline-primary w-100">
+            Найти
+        </button>
+    </div>
+</form>
+
+<ul id="tasksList" class="list-group"></ul>
+
+@section Scripts {
+    <script src="~/js/tasks.js" asp-append-version="true"></script>
+}
