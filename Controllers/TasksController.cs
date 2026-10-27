@@ -1,20 +1,26 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using TaskPlanner.Data;
 using TaskPlanner.DTOs;
 using TaskPlanner.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace TaskPlanner.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/tasks")]
 public class TasksController : ControllerBase
 {
     private readonly AppDbContext _db;
+    private readonly UserManager<IdentityUser> _userManager;
+    private string CurrentUserId => _userManager.GetUserId(User) ?? throw new UnauthorizedAccessException();
 
-    public TasksController(AppDbContext db)
+    public TasksController(AppDbContext db, UserManager<IdentityUser> userManager)
     {
         _db = db;
+        _userManager = userManager;
     }
 
     [HttpGet]
@@ -24,7 +30,7 @@ public class TasksController : ControllerBase
     {
         IQueryable<TaskItem> query = _db.Tasks
             .AsNoTracking()
-            .Where(t => !t.IsDeleted);
+            .Where(t => !t.IsDeleted && t.UserId == CurrentUserId);
 
         // Поиск по названию
         if (!string.IsNullOrWhiteSpace(search))
@@ -81,7 +87,8 @@ public class TasksController : ControllerBase
         var task = new TaskItem
         {
             Title = request.Title.Trim(),
-            Description = request.Description?.Trim()
+            Description = request.Description?.Trim(),
+            UserId = CurrentUserId
         };
 
         _db.Tasks.Add(task);
@@ -103,7 +110,7 @@ public class TasksController : ControllerBase
             return BadRequest("Title is required");
 
         var task = await _db.Tasks
-            .FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
+            .FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted && t.UserId == CurrentUserId);
 
         if (task is null)
             return NotFound();
@@ -123,7 +130,7 @@ public class TasksController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         var task = await _db.Tasks
-            .FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
+            .FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted && t.UserId == CurrentUserId);
 
         if (task is null)
             return NotFound();
@@ -140,7 +147,7 @@ public class TasksController : ControllerBase
     {
         var tasks = await _db.Tasks
             .AsNoTracking()
-            .Where(t => t.IsDeleted)
+            .Where(t => t.IsDeleted && t.UserId == CurrentUserId)
             .OrderByDescending(t => t.CreatedAt)
             .ToListAsync();
 
@@ -151,7 +158,7 @@ public class TasksController : ControllerBase
     public async Task<IActionResult> Restore(int id)
     {
         var task = await _db.Tasks
-            .FirstOrDefaultAsync(t => t.Id == id && t.IsDeleted);
+            .FirstOrDefaultAsync(t => t.Id == id && t.IsDeleted && t.UserId == CurrentUserId);
 
         if (task is null)
             return NotFound();
@@ -167,7 +174,7 @@ public class TasksController : ControllerBase
     public async Task<IActionResult> DeleteForever(int id)
     {
         var task = await _db.Tasks
-            .FirstOrDefaultAsync(t => t.Id == id && t.IsDeleted);
+            .FirstOrDefaultAsync(t => t.Id == id && t.IsDeleted && t.UserId == CurrentUserId);
 
         if (task is null)
             return NotFound();

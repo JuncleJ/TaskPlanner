@@ -13,4 +13,15 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     }
 
     public DbSet<TaskItem> Tasks => Set<TaskItem>();
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+
+        builder.Entity<TaskItem>()
+            .HasOne(t => t.User)
+            .WithMany()
+            .HasForeignKey(t => t.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
 }

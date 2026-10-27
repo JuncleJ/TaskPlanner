@@ -1,4 +1,5 @@
 namespace TaskPlanner.Models;
+using Microsoft.AspNetCore.Identity;
 
 public class TaskItem
 {
@@ -15,4 +16,8 @@ public class TaskItem
     public bool IsCompleted { get; set; } = false;
 
     public bool IsDeleted { get; set; } = false;
+
+    public string? UserId { get; set; }
+
+    public IdentityUser? User { get; set; }
 }
